@@ -1,4 +1,4 @@
-module github.com/yahve/gohl
+module github.com/m1ggle/gohl
 
 go 1.25.5
 

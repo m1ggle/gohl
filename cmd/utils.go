@@ -7,8 +7,8 @@ import (
 	"os"
 
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/m1ggle/gohl/conf"
 	"github.com/spf13/cobra"
-	"github.com/yahve/gohl/conf"
 	"golang.org/x/term"
 )
 

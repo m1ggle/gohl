@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/yahve/gohl/conf"
+	"github.com/m1ggle/gohl/conf"
 )
 
 func TestConf(t *testing.T) {

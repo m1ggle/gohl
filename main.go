@@ -1,6 +1,6 @@
 package main
 
-import "github.com/yahve/gohl/cmd"
+import "github.com/m1ggle/gohl/cmd"
 
 func main() {
 
