@@ -3,6 +3,7 @@ module github.com/yahve/gohl
 go 1.25.5
 
 require (
+	github.com/c-bata/go-prompt v0.2.6
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/olekukonko/tablewriter v1.1.3
 	github.com/spf13/cobra v1.8.1
@@ -12,7 +13,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	github.com/c-bata/go-prompt v0.2.6 // indirect
 	github.com/clipperhouse/displaywidth v0.6.2 // indirect
 	github.com/clipperhouse/stringish v0.1.1 // indirect
 	github.com/clipperhouse/uax29/v2 v2.3.0 // indirect
