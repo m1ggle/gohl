@@ -16,11 +16,13 @@ var loginCmd = &cobra.Command{
 	Use:   "login",
 	Short: "Connect to a MySQL database and start interactive shell",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		db, err := GetDBConnection(cmd)
+		db, dbName, err := GetDBConnection(cmd)
 		if err != nil {
 			return err
 		}
 		defer db.Close()
+
+		StartAsyncRefresh(db, dbName)
 
 		fmt.Println("Connected successfully")
 		fmt.Println("Enter SQL statements; type 'exit' or 'quit' to disconnect.")
@@ -46,42 +48,48 @@ func getSuggestions(doc prompt.Document) []prompt.Suggest {
 	if len(words) > 0 {
 		lastWord := strings.ToUpper(words[len(words)-1])
 		switch lastWord {
-		case "SEL":
-			return []prompt.Suggest{{Text: "SELECT", Description: "Select data from table"}}
-		case "SH":
-			return []prompt.Suggest{{Text: "SHOW", Description: "Show database information"}}
-		case "DE":
-			return []prompt.Suggest{{Text: "DELETE", Description: "Delete data from table"},
-				{Text: "DESCRIBE", Description: "Describe table structure"}}
-		case "UP":
-			return []prompt.Suggest{{Text: "UPDATE", Description: "Update data in table"}}
-		case "IN":
-			return []prompt.Suggest{{Text: "INSERT", Description: "Insert data into table"}}
-		case "CR":
-			return []prompt.Suggest{{Text: "CREATE", Description: "Create database object"}}
-		case "DR":
-			return []prompt.Suggest{{Text: "DROP", Description: "Drop database object"}}
-		case "AL":
-			return []prompt.Suggest{{Text: "ALTER", Description: "Alter database object"}}
-		case "TAB":
-			return []prompt.Suggest{{Text: "TABLE", Description: "Table keyword"}}
-		case "DAT":
+		case "SEL", "SELECT":
+			return getAllColumnSuggestions()
+		case "SH", "SHOW":
+			return []prompt.Suggest{{Text: "TABLES", Description: "Show tables"}, {Text: "DATABASES", Description: "Show databases"}}
+		case "DE", "DELETE":
+			return []prompt.Suggest{{Text: "FROM", Description: "Delete from table"}}
+		case "UP", "UPDATE":
+			return getTableSuggestions()
+		case "IN", "INSERT":
+			return []prompt.Suggest{{Text: "INTO", Description: "Insert into table"}}
+		case "CR", "CREATE":
+			return []prompt.Suggest{{Text: "TABLE", Description: "Create table"}}
+		case "DR", "DROP":
+			return []prompt.Suggest{{Text: "TABLE", Description: "Drop table"}}
+		case "AL", "ALTER":
+			return []prompt.Suggest{{Text: "TABLE", Description: "Alter table"}}
+		case "TAB", "TABLE":
+			return getTableSuggestions()
+		case "DAT", "DATABASE":
 			return []prompt.Suggest{{Text: "DATABASE", Description: "Database keyword"}}
-		case "FROM":
-			// 这里可以返回数据库中的表名，暂时返回通用提示
-			return []prompt.Suggest{{Text: "table_name", Description: "Table name"}}
-		case "INTO":
-			return []prompt.Suggest{{Text: "table_name", Description: "Table name"}}
-		case "US":
-			return []prompt.Suggest{{Text: "USE", Description: "Use database"}}
-		case "EX":
+		case "FROM", "JOIN", "INTO":
+			return getTableSuggestions()
+		case "WHERE", "SET", "BY", "ON", "AND", "OR":
+			return getAllColumnSuggestions()
+		case "US", "USE":
+			return []prompt.Suggest{{Text: "mysql", Description: "System database"}}
+		case "EX", "EXIT":
 			return []prompt.Suggest{{Text: "EXIT", Description: "Exit the shell"}}
-		case "QUI":
+		case "QUI", "QUIT":
 			return []prompt.Suggest{{Text: "QUIT", Description: "Quit the shell"}}
-		case "COM":
+		case "COM", "COMMIT":
 			return []prompt.Suggest{{Text: "COMMIT", Description: "Commit transaction"}}
-		case "ROL":
+		case "ROL", "ROLLBACK":
 			return []prompt.Suggest{{Text: "ROLLBACK", Description: "Rollback transaction"}}
+		}
+		// If we are after a keyword but not one of the above, maybe we are after a table name or something else.
+		// For now, if we match part of a known table, suggest it.
+		if len(words) >= 2 {
+			prevWord := strings.ToUpper(words[len(words)-2])
+			if prevWord == "FROM" || prevWord == "JOIN" || prevWord == "UPDATE" || prevWord == "INTO" {
+				return getTableSuggestions()
+			}
 		}
 	}
 

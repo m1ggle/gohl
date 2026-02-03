@@ -12,7 +12,7 @@ var queryCmd = &cobra.Command{
 	Short: "Execute a single SQL query and exit",
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
-		db, err := GetDBConnection(cmd)
+		db, _, err := GetDBConnection(cmd)
 		if err != nil {
 			return err
 		}
@@ -21,7 +21,7 @@ var queryCmd = &cobra.Command{
 		q := args[0]
 		up := strings.ToUpper(strings.TrimSpace(q))
 
-		if strings.HasPrefix(up, "SELECT") || strings.HasPrefix(up, "SHOW") || strings.HasPrefix(up, "DESCRIBE") || strings.HasPrefix(up, "EXPLAIN") {
+		if strings.HasPrefix(up, "SELECT") || strings.HasPrefix(up, "SHOW") || strings.HasPrefix(up, "DESCRIBE") || strings.HasPrefix(up, "EXPLAIN") || strings.HasPrefix(up, "DESC") {
 			runQuery(db, q) // reusing the helper from login.go if exported, or duplicate.
 			// Since they are in the same package 'cmd', I can share functions if they are lowercase? Yes.
 			// But I extracted 'runQuery' in login.go. I should make sure it's accessible.

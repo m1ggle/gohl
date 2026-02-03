@@ -22,7 +22,7 @@ func promptPassword() string {
 	return string(pw)
 }
 
-func GetDBConnection(cmd *cobra.Command) (*sql.DB, error) {
+func GetDBConnection(cmd *cobra.Command) (*sql.DB, string, error) {
 	// Viper already has the values, prioritized correctly (Flag > Config > Default)
 	cfg := conf.LoadConf()
 	host := cfg.Database.Host
@@ -45,13 +45,13 @@ func GetDBConnection(cmd *cobra.Command) (*sql.DB, error) {
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?parseTime=true", user, password, host, port, dbname)
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open connection: %w", err)
+		return nil, "", fmt.Errorf("failed to open connection: %w", err)
 	}
 
 	if err := db.Ping(); err != nil {
 		db.Close()
-		return nil, fmt.Errorf("failed to connect: %w", err)
+		return nil, "", fmt.Errorf("failed to connect: %w", err)
 	}
 
-	return db, nil
+	return db, dbname, nil
 }
