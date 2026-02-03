@@ -20,26 +20,27 @@ type Database struct {
 
 func LoadConf() Config {
 	var c Config
-	viper.Reset()
-	// 设置默认值
-	viper.SetDefault("database.host", "localhost")
-	viper.SetDefault("database.port", 3306)
-	viper.SetDefault("database.user", "root")
-	viper.SetDefault("database.password", "a12bCd3_W45pUq6")
-	viper.SetDefault("database.dbname", "mysql")
-
-	viper.SetConfigName("ghl")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("../conf")
-	viper.AddConfigPath("./conf")
-	viper.AddConfigPath("../../conf")
-	viper.AutomaticEnv()
-	if err := viper.ReadInConfig(); err != nil {
-		// 如果配置文件不存在，使用默认值
-		fmt.Printf("配置文件未找到，使用默认配置: %v\n", err)
-	}
 	if err := viper.Unmarshal(&c); err != nil {
 		panic(fmt.Errorf("配置反序列化失败: %w", err))
 	}
 	return c
+}
+
+func InitViper() {
+	// 设置默认值
+	viper.SetDefault("database.host", "localhost")
+	viper.SetDefault("database.port", 3306)
+	viper.SetDefault("database.user", "root")
+	viper.SetDefault("database.password", "")
+	viper.SetDefault("database.dbname", "mysql")
+
+	viper.SetEnvPrefix("GOHL")
+	viper.AutomaticEnv()
+
+	// 绑定环境变量
+	viper.BindEnv("database.password", "GOHL_DB_PASS")
+	viper.BindEnv("database.user", "GOHL_DB_USER")
+	viper.BindEnv("database.host", "GOHL_DB_HOST")
+	viper.BindEnv("database.port", "GOHL_DB_PORT")
+	viper.BindEnv("database.dbname", "GOHL_DB_NAME")
 }

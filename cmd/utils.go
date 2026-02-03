@@ -34,6 +34,8 @@ func GetDBConnection(cmd *cobra.Command) (*sql.DB, error) {
 
 	if password == "" {
 		password = promptPassword()
+	} else {
+		log.Println("Using password from environment or configuration")
 	}
 
 	if dbname == "" {

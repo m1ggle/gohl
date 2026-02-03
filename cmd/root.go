@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/m1ggle/gohl/conf"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 )
@@ -22,6 +23,7 @@ func Execute() {
 }
 
 func init() {
+	conf.InitViper()
 	cobra.OnInitialize(initConfig)
 
 	// Define persistent flags here so they are available to both login and query commands
@@ -33,11 +35,11 @@ func init() {
 	rootCmd.PersistentFlags().StringP("db", "d", "", "Database name")
 
 	// Bind flags to viper
-	viper.BindPFlag("host", rootCmd.PersistentFlags().Lookup("host"))
-	viper.BindPFlag("port", rootCmd.PersistentFlags().Lookup("port"))
-	viper.BindPFlag("user", rootCmd.PersistentFlags().Lookup("user"))
-	viper.BindPFlag("pass", rootCmd.PersistentFlags().Lookup("pass"))
-	viper.BindPFlag("db", rootCmd.PersistentFlags().Lookup("db"))
+	viper.BindPFlag("database.host", rootCmd.PersistentFlags().Lookup("host"))
+	viper.BindPFlag("database.port", rootCmd.PersistentFlags().Lookup("port"))
+	viper.BindPFlag("database.user", rootCmd.PersistentFlags().Lookup("user"))
+	viper.BindPFlag("database.password", rootCmd.PersistentFlags().Lookup("pass"))
+	viper.BindPFlag("database.dbname", rootCmd.PersistentFlags().Lookup("db"))
 }
 
 func initConfig() {

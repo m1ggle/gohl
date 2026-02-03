@@ -2,6 +2,5 @@
 database:
   dbname: mysql
   user: root
-  password: a12bCd3_W45pUq6
   host: localhost
   port: 3306
